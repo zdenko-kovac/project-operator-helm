@@ -3,6 +3,16 @@ entries:
   project-operator:
   - apiVersion: v2
     appVersion: v0.1.3
+    created: "2023-09-04T10:02:44.49362894Z"
+    description: A Helm chart for https://github.com/zdenko-kovac/project-operator
+    digest: e2fb561ca39baa6819b11a5da2df0e5c9ca6d36df58671a3938e7638d9f14c71
+    name: project-operator
+    type: application
+    urls:
+    - https://github.com/zdenko-kovac/project-operator-helm/releases/download/0.1.9/project-operator-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: v0.1.3
     created: "2023-08-28T08:25:17.721384598Z"
     description: A Helm chart for https://github.com/zdenko-kovac/project-operator
     digest: a5b73e6ce527d4cd55c1dec4f076bbfe5a88983954e554bd30649111b199d5fe
@@ -21,4 +31,4 @@ entries:
     urls:
     - https://github.com/zdenko-kovac/project-operator-helm/releases/download/0.1.0/project-operator-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-28T08:25:17.720556999Z"
+generated: "2023-09-04T10:02:44.492385361Z"
