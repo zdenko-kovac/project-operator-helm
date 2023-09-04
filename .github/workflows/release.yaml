@@ -164,11 +164,8 @@ jobs:
         appSlugFilter: github-actions
 
     - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: ${{ steps.get_target_release.outputs.tag }}
-        draft: false
-        prerelease: false
-        target_commitish: ${{ steps.get_target_commit.outputs.sha }}
-        token: ${{ secrets.WORKFLOW_USER_GH_TOKEN }}
-        generate_release_notes: false
+      env:
+        GH_TOKEN: ${{ secrets.WORKFLOW_USER_GH_TOKEN }}
+      run: |
+        gh release create ${{ steps.get_target_release.outputs.tag }} \
+          --target "${{ steps.get_target_commit.outputs.sha }}"
