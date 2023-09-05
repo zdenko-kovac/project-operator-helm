@@ -17,8 +17,8 @@ on:
         required: false
         default: ''
 
-  #schedule:
-  #  - cron: '*/20 * * * *'
+  schedule:
+    - cron: '*/20 * * * *'
 
 concurrency: trigger-release
 
@@ -72,11 +72,11 @@ jobs:
         prefix: ${{ env.TAG_PREFIX }}
 
     - name: Get number of commits since current release
-      id: commits_count
+      id: commits
       if: github.event_name == 'schedule'
       run: |
         git fetch --tags
-        echo "commits_count=$(git rev-list --count --no-merges ${{ steps.get_current_release.outputs.version }}..HEAD)" >> $GITHUB_OUTPUT
+        echo "count=$(git rev-list --count --no-merges ${{ steps.get_current_release.outputs.version }}..HEAD)" >> $GITHUB_OUTPUT
 
     - name: Determine target release
       id: get_target_release
@@ -85,7 +85,7 @@ jobs:
         current_version=${{ steps.get_current_release.outputs.version }}
         if "${{ github.event_name == 'schedule' }}"; then
           version_bump=patch
-          commits_count=${{ steps.commits_count.outputs.commits_count }}
+          commits_count=${{ steps.commits.outputs.count }}
         else
           version_bump=${{ inputs.version-bump }}
         fi
@@ -127,7 +127,6 @@ jobs:
         if [[ ${{ github.event_name == 'schedule' }} && $commits_count -eq 0 ]]; then
           create_release=false
           >&2 echo "There are no commits since latest release found, nothing to do."
-          exit 0
         else
           create_release=true
         fi
@@ -142,7 +141,7 @@ jobs:
       # a re-run of the job will fail in the following step, because it will try to make pushes to the triggering sha
       # which is no longer the head; this should be caught/improved.
     - name: Update chart version and chart docs
-      if: ${{ steps.get_target_release.outputs.create_release }} == 'true'
+      if: steps.get_target_release.outputs.create_release == true
       run: |
         current_chart_version=$(yq .version $CHART_DIRECTORY/Chart.yaml)
         target_chart_version=${{ steps.get_target_release.outputs.tag }}
@@ -173,7 +172,7 @@ jobs:
         git push
 
     - name: Determine target commit
-      if: ${{ steps.get_target_release.outputs.create_release }} == 'true'
+      if: steps.get_target_release.outputs.create_release == true
       id: get_target_commit
       run: |
         sha=$(git rev-parse HEAD)
@@ -181,7 +180,7 @@ jobs:
         echo "sha=$sha" >> $GITHUB_OUTPUT
 
     - name: Wait for check suites to complete
-      if: ${{ steps.get_target_release.outputs.create_release }} == 'true'
+      if: steps.get_target_release.outputs.create_release == true
       uses: zdenko-kovac/await-check-suites@master
       with:
         ref: ${{ steps.get_target_commit.outputs.sha }}
@@ -191,7 +190,7 @@ jobs:
         appSlugFilter: github-actions
 
     - name: Create Release
-      if: ${{ steps.get_target_release.outputs.create_release }} == 'true'
+      if: steps.get_target_release.outputs.create_release == true
       env:
         GH_TOKEN: ${{ secrets.WORKFLOW_USER_GH_TOKEN }}
       run: |
