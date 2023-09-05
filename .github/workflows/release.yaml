@@ -81,6 +81,7 @@ jobs:
     - name: Determine target release
       id: get_target_release
       run: |
+        create_release=true
         desired_version=${{ inputs.desired-version }}
         current_version=${{ steps.get_current_release.outputs.version }}
         if "${{ github.event_name == 'schedule' }}"; then
@@ -93,7 +94,6 @@ jobs:
           fi
         else
           version_bump=${{ inputs.version-bump }}
-          create_release=true
         fi
 
         if [ -z "$desired_version" ]; then
