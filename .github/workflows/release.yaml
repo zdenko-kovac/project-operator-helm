@@ -17,8 +17,8 @@ on:
         required: false
         default: ''
 
-  schedule:
-    - cron: '*/20 * * * *'
+  #schedule:
+  #  - cron: '*/20 * * * *'
 
 concurrency: trigger-release
 
